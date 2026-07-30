@@ -15,9 +15,6 @@
 *.heif 404
 *.image 404
 
-# /view 路径使用 2.html
-/view /2.html 200
-
 # 其他所有请求使用 index.html（默认）
 /* /index.html 200
 / /index.html 200
