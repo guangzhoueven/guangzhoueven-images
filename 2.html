@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片跳转</title>
+</head>
+<body>
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (id === null || id.trim() === '' || !/^\d+$/.test(id.trim())) {
+                document.write('<h2 style="color:#fff;background:#0b121f;text-align:center;padding:50px;font-family:sans-serif;">请提供ID: ?id=数字</h2>');
+                document.body.style.background = '#0b121f';
+                return;
+            }
+
+            const numId = parseInt(id.trim(), 10);
+            if (isNaN(numId) || numId < 1) {
+                document.write('<h2 style="color:#fff;background:#0b121f;text-align:center;padding:50px;font-family:sans-serif;">ID必须为正整数</h2>');
+                document.body.style.background = '#0b121f';
+                return;
+            }
+
+            const extList = ['png', 'gif', 'webp', 'jpg', 'jpeg', 'jfif', 'image', 'svg', 'bmp', 'avif', 'tiff', 'tif', 'ico', 'heic', 'heif'];
+            let checked = 0;
+
+            function tryNext() {
+                if (checked >= extList.length) {
+                    document.write('<h2 style="color:#fff;background:#0b121f;text-align:center;padding:50px;font-family:sans-serif;">找不到图片</h2>');
+                    document.body.style.background = '#0b121f';
+                    return;
+                }
+
+                const url = `${numId}.${extList[checked]}`;
+                checked++;
+
+                fetch(url, { method: 'HEAD' })
+                    .then(res => {
+                        if (res.ok) {
+                            window.location.href = url;
+                        } else {
+                            tryNext();
+                        }
+                    })
+                    .catch(() => tryNext());
+            }
+
+            tryNext();
+        })();
+    </script>
+</body>
+</html>
