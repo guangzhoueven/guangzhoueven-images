@@ -1,19 +1,22 @@
-# 图片请求不重定向
-/*.png -
-/*.gif -
-/*.webp -
-/*.jpg -
-/*.jpeg -
-/*.jfif -
-/*.svg -
-/*.bmp -
-/*.avif -
-/*.tiff -
-/*.tif -
-/*.ico -
-/*.heic -
-/*.heif -
-/*.image -
+# 图片请求返回 404，不重定向
+*.png 404
+*.gif 404
+*.webp 404
+*.jpg 404
+*.jpeg 404
+*.jfif 404
+*.svg 404
+*.bmp 404
+*.avif 404
+*.tiff 404
+*.tif 404
+*.ico 404
+*.heic 404
+*.heif 404
+*.image 404
 
-# 其他所有请求到 index
-/* /2.html 200
+# /view 路径使用 2.html
+/view /2.html 200
+
+# 其他所有请求使用 index.html（默认）
+/* /index.html 200
