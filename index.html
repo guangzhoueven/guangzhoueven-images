@@ -3,68 +3,613 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片跳转</title>
+    <title>图片ID查看器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b121f;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        .card {
+            max-width: 860px;
+            width: 100%;
+            background: #151f2e;
+            border-radius: 32px;
+            padding: 32px 28px 38px;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+            border: 1px solid #2a3648;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px 10px;
+            border-bottom: 1px solid #2a3648;
+            padding-bottom: 16px;
+            margin-bottom: 22px;
+        }
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #eaf0f8;
+            letter-spacing: -0.2px;
+        }
+        .header .id-badge {
+            background: #1f2b3d;
+            padding: 6px 22px;
+            border-radius: 60px;
+            border: 1px solid #334153;
+            color: #bccde4;
+            font-size: 1rem;
+        }
+        .header .id-badge strong {
+            color: #ffffff;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background: #1a2435;
+            border-radius: 60px;
+            padding: 8px 16px 8px 22px;
+            margin-bottom: 24px;
+            border: 1px solid #293549;
+        }
+        .controls label {
+            color: #9aafcc;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        .controls input[type="number"] {
+            background: #0e1623;
+            border: 1px solid #2a3648;
+            border-radius: 40px;
+            padding: 8px 16px;
+            width: 120px;
+            color: #eaf0f8;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: border 0.15s;
+            font-family: inherit;
+        }
+        .controls input[type="number"]:focus {
+            border-color: #5d8fdd;
+        }
+        .controls input[type="number"]::-webkit-inner-spin-button {
+            opacity: 0.6;
+        }
+        .controls .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+        .controls button {
+            background: #1f2b3d;
+            border: 1px solid #334153;
+            color: #d6e4f5;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .controls button:hover {
+            background: #2a3a52;
+            border-color: #4a6180;
+            color: #ffffff;
+        }
+        .controls button:active {
+            transform: scale(0.96);
+        }
+        .controls button.go-btn {
+            background: #2d4a6b;
+            border-color: #3d6088;
+            color: #ffffff;
+        }
+        .controls button.go-btn:hover {
+            background: #3a5f85;
+            border-color: #5a7fa8;
+        }
+        .controls button.nav-btn {
+            min-width: 72px;
+            justify-content: center;
+        }
+
+        .info-line {
+            background: #1a2435;
+            border-radius: 40px;
+            padding: 10px 22px;
+            margin-bottom: 24px;
+            color: #9aafcc;
+            font-size: 0.9rem;
+            border: 1px solid #293549;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .info-line code {
+            background: #0e1623;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #d6e4f5;
+            border: 1px solid #2a3648;
+        }
+
+        .stage {
+            background: #101926;
+            border-radius: 28px;
+            padding: 28px;
+            min-height: 360px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #26303f;
+            box-shadow: inset 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+        .stage img {
+            max-width: 100%;
+            max-height: 68vh;
+            object-fit: contain;
+            border-radius: 16px;
+            background: #0b121f;
+            display: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #7b8fa8;
+            width: 100%;
+            padding: 20px 10px;
+        }
+        .placeholder p {
+            font-size: 1.15rem;
+            font-weight: 400;
+            max-width: 420px;
+            line-height: 1.5;
+        }
+        .placeholder .sub {
+            font-size: 0.9rem;
+            color: #5b708b;
+            margin-top: 10px;
+        }
+        .placeholder .sub code {
+            background: #0e1623;
+            padding: 0 12px;
+            border-radius: 30px;
+            color: #c6d6ed;
+            border: 1px solid #2a3648;
+        }
+
+        .status-bar {
+            margin-top: 20px;
+            padding: 10px 22px;
+            border-radius: 60px;
+            background: #1a2435;
+            border: 1px solid #293549;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            color: #b0c3db;
+            font-size: 0.9rem;
+        }
+        .status-bar .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 20px;
+            background: #3d5068;
+            flex-shrink: 0;
+            transition: 0.15s;
+        }
+        .status-bar .dot.success {
+            background: #5fba7a;
+        }
+        .status-bar .dot.warning {
+            background: #e0b34b;
+        }
+        .status-bar .dot.error {
+            background: #d95b5b;
+        }
+        .status-bar .dot.info {
+            background: #5d8fdd;
+        }
+
+        .footer {
+            margin-top: 22px;
+            padding-top: 14px;
+            border-top: 1px solid #1f2b3d;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            color: #5b708b;
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                padding: 20px 14px;
+            }
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            .controls {
+                border-radius: 40px;
+                padding: 10px 16px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .controls .btn-group {
+                margin-left: 0;
+                justify-content: center;
+            }
+            .controls input[type="number"] {
+                width: 100%;
+            }
+            .info-line {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .stage {
+                padding: 16px;
+                min-height: 260px;
+            }
+        }
+    </style>
 </head>
-<body style="background:#0b121f;margin:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
-    <div id="content">
-        <h2 style="color:#fff;">正在查找图片...</h2>
+<body>
+    <div class="card">
+
+        <div class="header">
+            <h1>图片ID查看</h1>
+            <div class="id-badge">ID <strong id="idDisplay">—</strong></div>
+        </div>
+
+        <div class="controls">
+            <label for="idInput">ID</label>
+            <input type="number" id="idInput" min="1" step="1" placeholder="输入数字">
+            <div class="btn-group">
+                <button class="nav-btn" id="prevBtn">◀ 上一张</button>
+                <button class="nav-btn" id="nextBtn">下一张 ▶</button>
+                <button class="go-btn" id="goBtn">跳转</button>
+            </div>
+        </div>
+
+        <div class="info-line" id="infoLine">
+            <span id="hintText">输入ID或使用按钮</span>
+            <span>png · gif · webp · jpg · jfif · image</span>
+        </div>
+
+        <div class="stage" id="stage">
+            <div class="placeholder" id="placeholder">
+                <p><strong>输入ID查看图片</strong></p>
+                <div class="sub">例如 <code>23</code> 然后点击跳转</div>
+            </div>
+            <img id="mainImage" src="" alt="图片">
+        </div>
+
+        <div class="status-bar" id="statusBar">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusText">等待操作</span>
+            <span style="margin-left: auto; opacity: 0.6;"></span>
+        </div>
+
+        <div class="footer">
+            <span>当前目录</span>
+            <span>ID ± 1 翻页</span>
+        </div>
     </div>
+
     <script>
         (function() {
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
-            const content = document.getElementById('content');
+            const mainImage = document.getElementById('mainImage');
+            const placeholder = document.getElementById('placeholder');
+            const idDisplay = document.getElementById('idDisplay');
+            const hintText = document.getElementById('hintText');
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
 
-            if (!id || !/^\d+$/.test(id.trim())) {
-                content.innerHTML = '<h2 style="color:#fff;">请提供ID: ?id=数字</h2>';
-                return;
+            const idInput = document.getElementById('idInput');
+            const goBtn = document.getElementById('goBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            let currentId = null;
+            let isLoading = false;
+
+            function setStatus(type, message) {
+                statusText.textContent = message;
+                statusDot.className = 'dot';
+                if (type === 'success') statusDot.classList.add('success');
+                else if (type === 'warning') statusDot.classList.add('warning');
+                else if (type === 'error') statusDot.classList.add('error');
+                else statusDot.classList.add('info');
             }
 
-            const numId = parseInt(id.trim(), 10);
-            if (numId < 1) {
-                content.innerHTML = '<h2 style="color:#fff;">ID必须为正整数</h2>';
-                return;
+            function setInputValue(id) {
+                if (id !== null && id !== undefined && !isNaN(id) && id > 0) {
+                    idInput.value = id;
+                } else {
+                    idInput.value = '';
+                }
             }
 
-            const extList = ['png', 'gif', 'webp', 'jpg', 'jpeg', 'jfif', 'image', 'svg', 'bmp', 'avif', 'tiff', 'tif', 'ico', 'heic', 'heif'];
-            let currentIndex = 0;
-            let isRedirecting = false;
+            function showPlaceholder(title, subtitle) {
+                mainImage.style.display = 'none';
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = `
+                    <p><strong>${title}</strong></p>
+                    <div class="sub">${subtitle}</div>
+                `;
+                mainImage.src = '';
+            }
 
-            function tryNextImage() {
-                if (isRedirecting) return;
-                
-                if (currentIndex >= extList.length) {
-                    content.innerHTML = '<h2 style="color:#fff;">找不到图片</h2>';
+            function showNotFound() {
+                mainImage.style.display = 'none';
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = `
+                    <p><strong>找不到图片</strong></p>
+                `;
+                mainImage.src = '';
+            }
+
+            function showImage(url, id) {
+                if (!url) {
+                    showNotFound();
+                    setStatus('error', `未找到`);
                     return;
                 }
 
-                const url = `${numId}.${extList[currentIndex]}`;
-                const img = new Image();
-                
-                let timeoutId = setTimeout(() => {
-                    img.src = '';
-                    currentIndex++;
-                    tryNextImage();
-                }, 3000);
-                
-                img.onload = function() {
-                    clearTimeout(timeoutId);
-                    if (!isRedirecting) {
-                        isRedirecting = true;
-                        window.location.href = url;
-                    }
-                };
-                
-                img.onerror = function() {
-                    clearTimeout(timeoutId);
-                    currentIndex++;
-                    tryNextImage();
+                mainImage.style.display = 'block';
+                placeholder.style.display = 'none';
+                setStatus('info', `加载中...`);
+
+                mainImage.onload = function() {
+                    setStatus('success', `加载成功`);
+                    mainImage.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    hintText.innerHTML = `匹配到 <code>${url}</code>`;
+                    currentId = id;
+                    idDisplay.textContent = id;
+                    setInputValue(id);
+                    isLoading = false;
                 };
 
-                img.src = url;
+                mainImage.onerror = function() {
+                    showNotFound();
+                    setStatus('error', `加载失败`);
+                    mainImage.src = '';
+                    currentId = id;
+                    idDisplay.textContent = id;
+                    setInputValue(id);
+                    isLoading = false;
+                };
+
+                mainImage.src = url;
             }
 
-            tryNextImage();
+            // ========== 只改了这个函数 ==========
+            function resolveImageById(id) {
+                const raw = String(id).trim();
+                if (raw === '' || !/^\d+$/.test(raw)) {
+                    idDisplay.textContent = '?';
+                    showPlaceholder('请输入有效ID', '正整数，例如 <code>23</code>');
+                    setStatus('warning', '请输入数字ID');
+                    hintText.innerHTML = '输入数字ID点击跳转';
+                    mainImage.src = '';
+                    currentId = null;
+                    setInputValue('');
+                    isLoading = false;
+                    return;
+                }
+
+                const numId = parseInt(raw, 10);
+                if (isNaN(numId) || numId < 1) {
+                    idDisplay.textContent = '?';
+                    showPlaceholder('ID 必须 ≥ 1', '请重新输入');
+                    setStatus('warning', 'ID必须为正整数');
+                    mainImage.src = '';
+                    currentId = null;
+                    setInputValue('');
+                    isLoading = false;
+                    return;
+                }
+
+                idDisplay.textContent = numId;
+                hintText.innerHTML = `搜索 ID ${numId} ...`;
+                setInputValue(numId);
+                isLoading = true;
+
+                showPlaceholder('搜索中...', `ID ${numId}`);
+                setStatus('info', `搜索中...`);
+
+                const extList = ['png', 'gif', 'webp', 'jpg', 'jpeg', 'jfif', 'image', 'svg', 'bmp', 'avif', 'tiff', 'tif', 'ico', 'heic', 'heif'];
+                let currentIndex = 0;
+                let isFound = false;
+
+                function tryNextImage() {
+                    if (isFound) return;
+                    
+                    if (currentIndex >= extList.length) {
+                        showNotFound();
+                        setStatus('error', `未找到`);
+                        hintText.innerHTML = `未找到 ID ${numId}`;
+                        mainImage.src = '';
+                        currentId = numId;
+                        idDisplay.textContent = numId;
+                        setInputValue(numId);
+                        isLoading = false;
+                        return;
+                    }
+
+                    const url = `${numId}.${extList[currentIndex]}`;
+                    const img = new Image();
+                    
+                    let timeoutId = setTimeout(() => {
+                        img.src = '';
+                        currentIndex++;
+                        tryNextImage();
+                    }, 3000);
+
+                    img.onload = function() {
+                        clearTimeout(timeoutId);
+                        if (!isFound) {
+                            isFound = true;
+                            showImage(url, numId);
+                            hintText.innerHTML = `命中 <code>${url}</code>`;
+                            setStatus('success', `加载成功`);
+                            currentId = numId;
+                            isLoading = false;
+                        }
+                    };
+
+                    img.onerror = function() {
+                        clearTimeout(timeoutId);
+                        currentIndex++;
+                        tryNextImage();
+                    };
+
+                    img.src = url;
+                }
+
+                tryNextImage();
+            }
+
+            function goPrev() {
+                if (isLoading) {
+                    setStatus('warning', '加载中，请稍后');
+                    return;
+                }
+
+                let baseId = currentId;
+                if (baseId === null || baseId === undefined || isNaN(baseId)) {
+                    const val = idInput.value.trim();
+                    if (val === '' || isNaN(parseInt(val, 10))) {
+                        setStatus('warning', '请先输入或加载一个ID');
+                        return;
+                    }
+                    baseId = parseInt(val, 10);
+                }
+
+                if (baseId <= 1) {
+                    setStatus('warning', '已是第一个');
+                    return;
+                }
+                resolveImageById(baseId - 1);
+            }
+
+            function goNext() {
+                if (isLoading) {
+                    setStatus('warning', '加载中，请稍后');
+                    return;
+                }
+
+                let baseId = currentId;
+                if (baseId === null || baseId === undefined || isNaN(baseId)) {
+                    const val = idInput.value.trim();
+                    if (val === '' || isNaN(parseInt(val, 10))) {
+                        setStatus('warning', '请先输入或加载一个ID');
+                        return;
+                    }
+                    baseId = parseInt(val, 10);
+                }
+
+                resolveImageById(baseId + 1);
+            }
+
+            function getParamId() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('id');
+            }
+
+            function init() {
+                const idParam = getParamId();
+                if (idParam !== null && idParam.trim() !== '') {
+                    const num = parseInt(idParam.trim(), 10);
+                    if (!isNaN(num) && num > 0) {
+                        resolveImageById(num);
+                        setInputValue(num);
+                        return;
+                    }
+                }
+                idDisplay.textContent = '—';
+                showPlaceholder('输入ID查看图片', '例如 <code>23</code> 然后点击跳转');
+                setStatus('info', '请输入ID');
+                hintText.innerHTML = '输入ID或使用按钮';
+                mainImage.src = '';
+                currentId = null;
+                setInputValue('');
+                isLoading = false;
+            }
+
+            goBtn.addEventListener('click', function() {
+                if (isLoading) {
+                    setStatus('warning', '加载中，请稍后');
+                    return;
+                }
+                const val = idInput.value.trim();
+                if (val === '') {
+                    setStatus('warning', '请先输入ID');
+                    return;
+                }
+                const num = parseInt(val, 10);
+                if (isNaN(num) || num < 1) {
+                    setStatus('warning', '请输入正整数');
+                    return;
+                }
+                resolveImageById(num);
+            });
+
+            prevBtn.addEventListener('click', goPrev);
+            nextBtn.addEventListener('click', goNext);
+
+            idInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    goBtn.click();
+                }
+            });
+
+            window.addEventListener('popstate', init);
+
+            if (document.readyState === 'complete') {
+                init();
+            } else {
+                window.addEventListener('load', init);
+            }
+
+            window.__viewer = { init, resolveImageById, goPrev, goNext };
         })();
     </script>
 </body>

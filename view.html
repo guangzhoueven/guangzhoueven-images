@@ -15,7 +15,6 @@
             const id = params.get('id');
             const content = document.getElementById('content');
 
-            // 验证 ID
             if (!id || !/^\d+$/.test(id.trim())) {
                 content.innerHTML = '<h2 style="color:#fff;">请提供ID: ?id=数字</h2>';
                 return;
@@ -27,21 +26,13 @@
                 return;
             }
 
-            // 图片扩展名列表（按优先级排序）
-            const extList = [
-                'png', 'gif', 'webp', 'jpg', 'jpeg', 
-                'jfif', 'image', 'svg', 'bmp', 'avif', 
-                'tiff', 'tif', 'ico', 'heic', 'heif'
-            ];
-            
+            const extList = ['png', 'gif', 'webp', 'jpg', 'jpeg', 'jfif', 'image', 'svg', 'bmp', 'avif', 'tiff', 'tif', 'ico', 'heic', 'heif'];
             let currentIndex = 0;
             let isRedirecting = false;
 
             function tryNextImage() {
-                // 防止重复跳转
                 if (isRedirecting) return;
                 
-                // 所有扩展名都试完了
                 if (currentIndex >= extList.length) {
                     content.innerHTML = '<h2 style="color:#fff;">找不到图片</h2>';
                     return;
@@ -50,12 +41,11 @@
                 const url = `${numId}.${extList[currentIndex]}`;
                 const img = new Image();
                 
-                // 设置超时，防止某些情况卡住
                 let timeoutId = setTimeout(() => {
                     img.src = '';
                     currentIndex++;
                     tryNextImage();
-                }, 5000);
+                }, 3000);
                 
                 img.onload = function() {
                     clearTimeout(timeoutId);
@@ -71,11 +61,9 @@
                     tryNextImage();
                 };
 
-                // 开始加载图片
                 img.src = url;
             }
 
-            // 开始尝试
             tryNextImage();
         })();
     </script>
