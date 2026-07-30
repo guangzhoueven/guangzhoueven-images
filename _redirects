@@ -14,7 +14,3 @@
 *.heic 404
 *.heif 404
 *.image 404
-
-# 其他所有请求使用 index.html（默认）
-/* /index.html 200
-/ /index.html 200
