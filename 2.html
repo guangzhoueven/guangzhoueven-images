@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>图片跳转</title>
 </head>
-<body style="background:#0b121f;margin:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+<body style="background:#0b121f;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:sans-serif;">
     <div id="content"></div>
     <script>
         (function() {
@@ -24,40 +24,18 @@
                 return;
             }
 
-            const extList = ['png', 'gif', 'webp', 'jpg', 'jpeg', 'jfif', 'image', 'svg', 'bmp', 'avif', 'tiff', 'tif', 'ico', 'heic', 'heif'];
-            let currentIndex = 0;
-
-            function tryImage() {
-                if (currentIndex >= extList.length) {
-                    content.innerHTML = '<h2 style="color:#fff;">找不到图片</h2>';
-                    return;
-                }
-
-                const url = `${numId}.${extList[currentIndex]}`;
-                
-                fetch(url, { 
-                    method: 'GET',
-                    cache: 'no-store'
-                })
-                .then(res => {
-                    // 检查响应头，如果是 HTML 则说明是回退页面
-                    const contentType = res.headers.get('content-type') || '';
-                    if (res.ok && !contentType.includes('text/html')) {
-                        // 是图片，跳转
-                        window.location.href = url;
+            fetch(`/check-image?id=${numId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.url) {
+                        window.location.href = data.url;
                     } else {
-                        // 是 HTML（回退页面）或不存在
-                        currentIndex++;
-                        tryImage();
+                        content.innerHTML = '<h2 style="color:#fff;">找不到图片</h2>';
                     }
                 })
                 .catch(() => {
-                    currentIndex++;
-                    tryImage();
+                    content.innerHTML = '<h2 style="color:#fff;">检查失败</h2>';
                 });
-            }
-
-            tryImage();
         })();
     </script>
 </body>
