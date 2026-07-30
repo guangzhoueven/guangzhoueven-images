@@ -14,3 +14,5 @@
 *.heic 404
 *.heif 404
 *.image 404
+
+/ /index.html 200
