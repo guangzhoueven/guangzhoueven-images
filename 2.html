@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>图片跳转</title>
 </head>
-<body style="background:#0b121f;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:sans-serif;">
-    <div id="content"></div>
+<body style="background:#0b121f;margin:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+    <div id="content">
+        <h2 style="color:#fff;">正在查找图片...</h2>
+    </div>
     <script>
         (function() {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
             const content = document.getElementById('content');
 
+            // 验证 ID
             if (!id || !/^\d+$/.test(id.trim())) {
                 content.innerHTML = '<h2 style="color:#fff;">请提供ID: ?id=数字</h2>';
                 return;
@@ -24,18 +27,56 @@
                 return;
             }
 
-            fetch(`/check-image?id=${numId}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.url) {
-                        window.location.href = data.url;
-                    } else {
-                        content.innerHTML = '<h2 style="color:#fff;">找不到图片</h2>';
+            // 图片扩展名列表（按优先级排序）
+            const extList = [
+                'png', 'gif', 'webp', 'jpg', 'jpeg', 
+                'jfif', 'image', 'svg', 'bmp', 'avif', 
+                'tiff', 'tif', 'ico', 'heic', 'heif'
+            ];
+            
+            let currentIndex = 0;
+            let isRedirecting = false;
+
+            function tryNextImage() {
+                // 防止重复跳转
+                if (isRedirecting) return;
+                
+                // 所有扩展名都试完了
+                if (currentIndex >= extList.length) {
+                    content.innerHTML = '<h2 style="color:#fff;">找不到图片</h2>';
+                    return;
+                }
+
+                const url = `${numId}.${extList[currentIndex]}`;
+                const img = new Image();
+                
+                // 设置超时，防止某些情况卡住
+                let timeoutId = setTimeout(() => {
+                    img.src = '';
+                    currentIndex++;
+                    tryNextImage();
+                }, 5000);
+                
+                img.onload = function() {
+                    clearTimeout(timeoutId);
+                    if (!isRedirecting) {
+                        isRedirecting = true;
+                        window.location.href = url;
                     }
-                })
-                .catch(() => {
-                    content.innerHTML = '<h2 style="color:#fff;">检查失败</h2>';
-                });
+                };
+                
+                img.onerror = function() {
+                    clearTimeout(timeoutId);
+                    currentIndex++;
+                    tryNextImage();
+                };
+
+                // 开始加载图片
+                img.src = url;
+            }
+
+            // 开始尝试
+            tryNextImage();
         })();
     </script>
 </body>
