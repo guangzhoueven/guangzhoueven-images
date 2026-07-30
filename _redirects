@@ -1,0 +1,19 @@
+# 图片请求不重定向
+/*.png -
+/*.gif -
+/*.webp -
+/*.jpg -
+/*.jpeg -
+/*.jfif -
+/*.svg -
+/*.bmp -
+/*.avif -
+/*.tiff -
+/*.tif -
+/*.ico -
+/*.heic -
+/*.heif -
+/*.image -
+
+# 其他所有请求到 index
+/* /2.html 200
